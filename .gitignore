@@ -1,15 +1,24 @@
+# shell scripts
+.bashrc
 
-.env/
-
+# Python
 *.pyc
+*.pyo
+*.pyd
 __pycache__/
+*.py[cod]
+*$py.class
 
 instance/
 
-.pytest_cache/
-.coverage
-htmlcov/
+# Virtual environment
+venv/
+.venv/
 
-dist/
-build/
-*.egg-info/
+# IDEs
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
