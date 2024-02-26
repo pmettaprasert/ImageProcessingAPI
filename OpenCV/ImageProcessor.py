@@ -106,19 +106,3 @@ class RotateRightProcessor(ImageProcessor):
         self.image = cv2.rotate(self.image, cv2.ROTATE_90_CLOCKWISE)
         return self
         
-if __name__ == "__main__":
-    image_path = "profile.jpg"
-    image = cv2.imread(image_path)
-    if image is None:
-        print("Error loading image")
-    else:
-        print("Image loaded successfully")
-        # Apply a sequence of processing steps
-        processed_image = FlipProcessor(image, 1).process_image().get_image()
-        processed_image = GrayscaleProcessor(processed_image).process_image().get_image()
-        # You can continue chaining other processing operations as needed
-
-        # Show the final result
-        cv2.imshow('Processed Image', processed_image)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
