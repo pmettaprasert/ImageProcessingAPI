@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import io
+from imghdr import what
 
 # Import your image processing classes
 from .ImageProcessor import FlipProcessor, RotateProcessor, GrayscaleProcessor, ResizeProcessor, ThumbnailProcessor, RotateLeftProcessor, RotateRightProcessor
@@ -15,6 +16,11 @@ def process_image_sequence(image_bytes, operations):
     # Convert the bytes to an OpenCV image
     file_bytes = np.asarray(bytearray(image_bytes), dtype=np.uint8)
     image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+    
+    # Determine the image format and set it to jpg if it's not recognized
+    image_format = what(io.BytesIO(image_bytes))
+    if image_format is None:
+        image_format = 'jpg'
     
     # Process the image with the sequence of operations
     for op in operations:
@@ -50,6 +56,7 @@ def process_image_sequence(image_bytes, operations):
             
 
         
-    # After processing, convert the image back to bytes
-    _, buf = cv2.imencode('.jpg', image)
+    # Convert the image back to bytes, using the original image format
+    image_extension = f'.{image_format}'
+    _, buf = cv2.imencode(image_extension, image)
     return io.BytesIO(buf)
