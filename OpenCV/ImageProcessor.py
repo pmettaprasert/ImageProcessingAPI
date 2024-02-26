@@ -25,6 +25,8 @@ class FlipProcessor(ImageProcessor):
         
     def process_image(self):
         self.image = cv2.flip(self.image, self.flip_code)
+        
+        print(f"Flipped image in {self.flip_code} direction")
         return self
 
 # Rotate Operation
@@ -42,6 +44,8 @@ class RotateProcessor(ImageProcessor):
         # - is counter-clockwise, + is clockwise
         M = cv2.getRotationMatrix2D(center, -self.angle, 1.0)  # Note the '-' sign to adjust direction
         self.image = cv2.warpAffine(self.image, M, (w, h))
+        
+        print(f"Rotated by {self.angle} degrees")
         return self
 
 # Grayscale Operation
@@ -51,6 +55,8 @@ class GrayscaleProcessor(ImageProcessor):
         
     def process_image(self):
         self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+        
+        print("Converted to grayscale")
         return self
 
 # Resize Operation
@@ -62,6 +68,8 @@ class ResizeProcessor(ImageProcessor):
         
     def process_image(self):
         self.image = cv2.resize(self.image, (self.width, self.height))
+        
+        print(f"Resized to {self.width}x{self.height}")
         return self
 
 # Thumbnail Operation (similar to Resize but with aspect ratio consideration)
@@ -90,6 +98,9 @@ class ThumbnailProcessor(ImageProcessor):
         color = [0, 0, 0]  # Black padding
         self.image = cv2.copyMakeBorder(self.image, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color)
         
+        # Log that thumbnail is created
+        print("Thumbnail created")
+        
         return self
 
 # Rotate Left (90 degrees CCW)
@@ -99,6 +110,8 @@ class RotateLeftProcessor(ImageProcessor):
         
     def process_image(self):
         self.image = cv2.rotate(self.image, cv2.ROTATE_90_COUNTERCLOCKWISE)
+        
+        print("Rotated left")
         return self
 
 # Rotate Right (90 degrees CW)
@@ -108,5 +121,6 @@ class RotateRightProcessor(ImageProcessor):
         
     def process_image(self):
         self.image = cv2.rotate(self.image, cv2.ROTATE_90_CLOCKWISE)
+        print("Rotated right")
         return self
         
