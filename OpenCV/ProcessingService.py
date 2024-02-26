@@ -12,6 +12,14 @@ def convert_direction_to_code(direction):
         return 1
     elif direction == 'vertical':
         return 0
+    
+def validate_resize_percentage(percentage):
+    if not -95 <= percentage <= 500:
+        raise ValueError("Resize percentage must be between -95% and +500%.")
+
+def validate_rotation_degrees(degrees):
+    if not -10000 <= degrees <= 10000:
+        raise ValueError("Rotation degrees must be between -10000 and +10000.")
 
 def process_image_sequence(image_bytes, operations):
     print("Reached the ProcessingService.py")
@@ -34,15 +42,18 @@ def process_image_sequence(image_bytes, operations):
         
         elif operation_type == 'rotate':
             degrees = op.get('degrees', 0)  # Default rotation is 0 degrees
+            validate_rotation_degrees(degrees)
             image = RotateProcessor(image, degrees).process_image().get_image()
             
         elif operation_type == 'grayscale':
             image = GrayscaleProcessor(image).process_image().get_image()
             
         elif operation_type == 'resize':
-            width = op.get('width', 100)  # Default width if not specified
-            height = op.get('height', 100)  # Default height if not specified
-            image = ResizeProcessor(image, width, height).process_image().get_image()
+        
+            percentage = op.get('percentage', 100)
+            validate_resize_percentage(percentage)
+            processor = ResizeProcessor(image, percentage)
+            image = processor.process_image().get_image()
             
         elif operation_type == 'thumbnail':
             thumbnail_processor = ThumbnailProcessor(image)

@@ -61,17 +61,22 @@ class GrayscaleProcessor(ImageProcessor):
 
 # Resize Operation
 class ResizeProcessor(ImageProcessor):
-    def __init__(self, image, width, height):
+    def __init__(self, image, percentage):
         super().__init__(image)
-        self.width = width
-        self.height = height
-        
-    def process_image(self):
-        self.image = cv2.resize(self.image, (self.width, self.height))
-        
-        print(f"Resized to {self.width}x{self.height}")
-        return self
+        self.percentage = percentage
 
+    def process_image(self):
+        # Calculate new dimensions
+        width = int(self.image.shape[1] * self.percentage / 100)
+        height = int(self.image.shape[0] * self.percentage / 100)
+
+        # Resize the image
+        self.image = cv2.resize(self.image, (width, height))
+
+        print(f"Resized to {width}x{height} ({self.percentage}%)")
+        return self
+    
+    
 # Thumbnail Operation (similar to Resize but with aspect ratio consideration)
 class ThumbnailProcessor(ImageProcessor):
     def __init__(self, image, max_width=200, max_height=200):
