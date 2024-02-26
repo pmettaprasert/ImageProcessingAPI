@@ -62,16 +62,30 @@ class ResizeProcessor(ImageProcessor):
 
 # Thumbnail Operation (similar to Resize but with aspect ratio consideration)
 class ThumbnailProcessor(ImageProcessor):
-    def __init__(self, image, max_width, max_height):
+    def __init__(self, image, max_width=200, max_height=200):
         super().__init__(image)
         self.max_width = max_width
         self.max_height = max_height
         
     def process_image(self):
+        # Calculate the scaling factor to preserve aspect ratio
         h, w = self.image.shape[:2]
         scaling_factor = min(self.max_width / w, self.max_height / h)
         new_size = (int(w * scaling_factor), int(h * scaling_factor))
+
+        # Resize the image with aspect ratio preservation
         self.image = cv2.resize(self.image, new_size)
+
+        # Calculate padding for letter-boxing
+        delta_w = self.max_width - new_size[0]
+        delta_h = self.max_height - new_size[1]
+        top, bottom = delta_h // 2, delta_h - (delta_h // 2)
+        left, right = delta_w // 2, delta_w - (delta_w // 2)
+
+        # Add padding to the image to achieve the thumbnail size with letter-boxing
+        color = [0, 0, 0]  # Black padding
+        self.image = cv2.copyMakeBorder(self.image, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color)
+        
         return self
 
 # Rotate Left (90 degrees CCW)
