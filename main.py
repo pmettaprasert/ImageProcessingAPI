@@ -23,6 +23,8 @@ def process_image_sequence_route():
         
         # Log the number of operations
         app.logger.info(f"Processed the image with {len(operations)} operations")
+        #log the operations performed
+        app.logger.info(f"Operations performed: {operations}")
 
         # Create a ZIP archive in memory
         memory_file = io.BytesIO()
