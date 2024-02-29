@@ -35,7 +35,7 @@ def get_operations():
 def create_operation(choice):
     if choice == '1':
         degrees = input("Enter degrees to rotate (int only): ")
-        return {"operation": "rotate", "degrees": degrees}
+        return {"operation": "rotate", "degrees": int(degrees)}
     elif choice == '2':
         direction = input("Enter flip direction (horizontal, vertical, both): ")
         return {"operation": "flip", "direction": direction}
@@ -43,7 +43,7 @@ def create_operation(choice):
         return {"operation": "grayscale"}
     elif choice == '4':
         percentage = input("Enter resize percentage (int only): ")
-        return {"operation": "resize", "percentage": percentage}
+        return {"operation": "resize", "percentage": int(percentage)}
     elif choice == '5':
         return {"operation": "thumbnail"}
     elif choice == '6':
