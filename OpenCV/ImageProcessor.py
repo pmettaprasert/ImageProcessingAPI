@@ -108,24 +108,24 @@ class ThumbnailProcessor(ImageProcessor):
         
         return self
 
-# Rotate Left (90 degrees CCW)
+# Rotate Left (90 degrees CW)
 class RotateLeftProcessor(ImageProcessor):
     def __init__(self, image):
         super().__init__(image)
         
     def process_image(self):
-        self.image = cv2.rotate(self.image, cv2.ROTATE_90_COUNTERCLOCKWISE)
+        self.image = cv2.rotate(self.image, cv2.ROTATE_90_CLOCKWISE)
         
         print("Rotated left")
         return self
 
-# Rotate Right (90 degrees CW)
+# Rotate Right (90 degrees CCW)
 class RotateRightProcessor(ImageProcessor):
     def __init__(self, image):
         super().__init__(image)
         
     def process_image(self):
-        self.image = cv2.rotate(self.image, cv2.ROTATE_90_CLOCKWISE)
+        self.image = cv2.rotate(self.image, cv2.ROTATE_90_COUNTERCLOCKWISE)
         print("Rotated right")
         return self
         
