@@ -86,15 +86,24 @@ def check_op_parameters(operation):
         for param in required_params[operation_type]:
             if param not in operation:
                 raise ValueError(f"'{param}' is required for {operation_type} operation.")
+
             # Additional specific checks can be implemented here
-            if operation_type == 'flip' and operation[param] not in ['horizontal', 'vertical']:
-                raise ValueError("Flip direction must be 'horizontal' or 'vertical'.")
+            if operation_type == 'flip':
+                direction = operation[param]
+                if direction not in ['horizontal', 'vertical']:
+                    raise ValueError("Flip direction must be 'horizontal' or 'vertical'.")
+            
             if operation_type == 'rotate':
-                degrees = operation.get('degrees', 0)
+                degrees = operation[param]
+                if not isinstance(degrees, int):
+                    raise ValueError("Rotation degrees must be an integer.")
                 if not -10000 <= degrees <= 10000:
                     raise ValueError("Rotation degrees must be between -10000 and +10000.")
+            
             if operation_type == 'resize':
-                percentage = operation.get('percentage', 100)
+                percentage = operation[param]
+                if not isinstance(percentage, int) and not isinstance(percentage, float):
+                    raise ValueError("Resize percentage must be an integer or float.")
                 if not -95 <= percentage <= 500:
                     raise ValueError("Resize percentage must be between -95% and +500%.")
 
