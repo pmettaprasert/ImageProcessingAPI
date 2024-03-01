@@ -4,6 +4,7 @@ import io
 import zipfile
 from OpenCV.ProcessingService import process_image_sequence
 from werkzeug.exceptions import BadRequest
+from PIL import Image
 
 app = Flask(__name__)
 
@@ -16,8 +17,20 @@ def process_image_sequence_route():
 
     try:
         image_file = request.files['image'].read()
+        
+        
+        #TODO NEED TO CHECK MISSING PARAMETERS
+        #check if image is JPG, PNG, GIF, TIFF
+        
+        # Check if image is JPG, PNG, GIF, or TIFF
+        image = Image.open(io.BytesIO(image_file))
+        image_format = image.format
+        if image_format not in ['JPEG', 'PNG', 'GIF', 'TIFF']:
+            raise BadRequest("Invalid image format. Only JPG, PNG, GIF, and TIFF are supported.")
         operations = json.loads(request.form['operations'])
-
+        for op in operations:
+            check_op_parameters(op)
+        
         # Process image and get list of (filename, bytes) for processed images
         processed_images = process_image_sequence(image_file, operations)
         
@@ -50,7 +63,18 @@ def process_image_sequence_route():
         return response
     except Exception as e:
         app.logger.error(f"An error occurred: {str(e)}")
-        return jsonify({'error': str(e)}), 500
+        #if it is a value error, return a 400 error
+        if isinstance(e, ValueError):
+            raise BadRequest(str(e))
+        #else it is a 500 error
+        raise BadRequest("An error occurred while processing the image")
+    
+    
+def check_op_parameters(operation):
+    
+    
+    
+    
 
 if __name__ == '__main__':
     app.run(debug=True)
