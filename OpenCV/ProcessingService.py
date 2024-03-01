@@ -12,6 +12,8 @@ def convert_direction_to_code(direction):
         return 1
     elif direction == 'vertical':
         return 0
+    else:
+        raise ValueError("Invalid flip direction. Must be 'horizontal' or 'vertical'.")
     
 def validate_resize_percentage(percentage):
     if not -95 <= percentage <= 500:
@@ -70,10 +72,14 @@ def process_image_sequence(image_bytes, operations):
         
         elif operation_type == 'rotateRight':
             image = RotateRightProcessor(image).process_image().get_image()
+        else:
+            raise ValueError(f"Invalid operation type: {operation_type}")
 
     # Convert the final processed image back to bytes
     _, final_buf = cv2.imencode(f'.{image_format}', image)
     final_image_bytes = io.BytesIO(final_buf).getvalue()
+    
+    # Store the final processed image with datetime in this format: final_processed_image_YYYY_MM_DD_HH:MM:SS.{image_format}
     final_filename = f"final_processed_image_{datetime.now().strftime('%Y%m%d%H%M%S%f')}.{image_format}"
     processed_images.insert(0, (final_filename, final_image_bytes))  # Ensure the final image is the first in the list
 
