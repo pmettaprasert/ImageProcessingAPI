@@ -71,6 +71,36 @@ def process_image_sequence_route():
     
     
 def check_op_parameters(operation):
+    operation_type = operation.get('operation')
+
+    # Define required parameters for each operation type
+    required_params = {
+        'flip': ['direction'],
+        'rotate': ['degrees'],
+        'resize': ['percentage'],
+        # 'thumbnail', 'grayscale', 'rotateLeft', 'rotateRight' do not have required params in this setup
+    }
+
+    # Check if operation type is known and has required parameters
+    if operation_type in required_params:
+        for param in required_params[operation_type]:
+            if param not in operation:
+                raise ValueError(f"'{param}' is required for {operation_type} operation.")
+            # Additional specific checks can be implemented here
+            if operation_type == 'flip' and operation[param] not in ['horizontal', 'vertical']:
+                raise ValueError("Flip direction must be 'horizontal' or 'vertical'.")
+            if operation_type == 'rotate':
+                degrees = operation.get('degrees', 0)
+                if not -10000 <= degrees <= 10000:
+                    raise ValueError("Rotation degrees must be between -10000 and +10000.")
+            if operation_type == 'resize':
+                percentage = operation.get('percentage', 100)
+                if not -95 <= percentage <= 500:
+                    raise ValueError("Resize percentage must be between -95% and +500%.")
+
+    else:
+        raise ValueError(f"Unknown operation type: {operation_type}")
+
     
     
     
