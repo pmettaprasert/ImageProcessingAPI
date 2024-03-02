@@ -33,17 +33,29 @@ class FlipProcessor(ImageProcessor):
 class RotateProcessor(ImageProcessor):
     def __init__(self, image, angle):
         super().__init__(image)
-        # Ensure angle is an integer, rounding if necessary. This ensures that
-        # at least it doesn't fail and some image is returned
-        self.angle = round(angle)
+        self.angle = angle  # No rounding needed if you want to allow non-integer angles
         
     def process_image(self):
         (h, w) = self.image.shape[:2]
-        center = (w / 2, h / 2)
-        # Adjust angle for clockwise rotation if desired
-        # - is counter-clockwise, + is clockwise
-        M = cv2.getRotationMatrix2D(center, -self.angle, 1.0)  # Note the '-' sign to adjust direction
-        self.image = cv2.warpAffine(self.image, M, (w, h))
+        center = (w // 2, h // 2)
+        
+        # Calculate the rotation matrix
+        M = cv2.getRotationMatrix2D(center, -self.angle, 1.0)
+        
+        # Perform the rotation with no clipping
+        abs_cos = abs(M[0, 0])
+        abs_sin = abs(M[0, 1])
+
+        # Find the new width and height bounds
+        bound_w = int(h * abs_sin + w * abs_cos)
+        bound_h = int(h * abs_cos + w * abs_sin)
+
+        # Adjust the rotation matrix to the new bounds
+        M[0, 2] += bound_w / 2 - center[0]
+        M[1, 2] += bound_h / 2 - center[1]
+
+        # Rotate the whole image
+        self.image = cv2.warpAffine(self.image, M, (bound_w, bound_h))
         
         print(f"Rotated by {self.angle} degrees")
         return self
