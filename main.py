@@ -30,12 +30,15 @@ def process_image_sequence_route():
         image = Image.open(io.BytesIO(image_file))
         image_format = image.format
         if image_format not in ['JPEG', 'PNG', 'GIF', 'TIFF']:
-            raise BadRequest("Invalid image format. Only JPG, PNG, GIF, and TIFF are supported.")
+            raise BadRequest(f"Invalid image format. Image was {image_format}. Only JPG, PNG, GIF, and TIFF are supported.")
 
         # Operations count check
         operations = json.loads(request.form['operations'])
         if len(operations) > MAX_OPERATIONS:
             raise BadRequest(f"Too many operations. Maximum allowed is {MAX_OPERATIONS}.")
+        
+        for index, op in enumerate(operations, start=1):
+            check_op_parameters(op, index)
 
         # Process image
         processed_images = process_image_sequence(image_file, operations)
@@ -59,7 +62,7 @@ def process_image_sequence_route():
         return jsonify({'error': "An unexpected error occurred while processing the image"}), 500
     
     
-def check_op_parameters(operation):
+def check_op_parameters(operation, index):
     operation_type = operation.get('operation')
 
     # Define required parameters for each operation type
@@ -73,34 +76,36 @@ def check_op_parameters(operation):
     if operation_type in required_params:
         for param in required_params[operation_type]:
             if param not in operation:
-                raise BadRequest(f"'{param}' is required for {operation_type} operation.")
+                raise BadRequest(f"Operation {index}: '{param}' is required for {operation_type} operation. Please check your spelling or syntax.")
 
             # Additional specific checks
             if operation_type == 'flip':
                 direction = operation[param]
                 if direction not in ['horizontal', 'vertical']:
-                    raise BadRequest("Flip direction must be 'horizontal' or 'vertical'.")
+                    raise BadRequest(f"Operation {index}: Flip direction must be 'horizontal' or 'vertical'.")
             
             if operation_type == 'rotate':
                 degrees = operation[param]
                 if not isinstance(degrees, int):
-                    raise BadRequest("Rotation degrees must be an integer.")
+                    raise BadRequest(f"Operation {index}: Rotation degrees must be an integer.")
                 if not -10000 <= degrees <= 10000:
-                    raise BadRequest("Rotation degrees must be between -10000 and +10000.")
+                    raise BadRequest(f"Operation {index}: Rotation degrees must be between -10000 and +10000.")
             
             if operation_type == 'resize':
                 percentage = operation[param]
                 if not isinstance(percentage, int) and not isinstance(percentage, float):
-                    raise BadRequest("Resize percentage must be an integer or float.")
+                    raise BadRequest(f"Operation {index}: Resize percentage must be an integer or float.")
                 if not -95 <= percentage <= 500:
-                    raise BadRequest("Resize percentage must be between -95% and +500%.")
+                    raise BadRequest(f"Operation {index}: Resize percentage must be between -95% and +500%.")
                 
     elif operation_type in ['thumbnail', 'grayscale', 'rotateLeft', 'rotateRight']:
         # No required parameters for these operations
         pass
 
     else:
-        raise BadRequest(f"Unknown operation type: {operation_type}. Please check the operation type and parameters.")
+        raise BadRequest(f"Operation {index}: Unknown operation type: {operation_type}. Please check the operation type and parameters.")
+    
+
     
     
     
