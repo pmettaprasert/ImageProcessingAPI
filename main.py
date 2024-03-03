@@ -118,4 +118,4 @@ def check_op_parameters(operation, index):
 #Start of application run    
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, threaded=True)
