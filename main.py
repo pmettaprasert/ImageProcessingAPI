@@ -29,8 +29,8 @@ def process_image_sequence_route():
         # Image format check
         image = Image.open(io.BytesIO(image_file))
         image_format = image.format
-        if image_format not in ['JPEG', 'PNG', 'GIF', 'TIFF']:
-            raise BadRequest(f"Invalid image format. Image was {image_format}. Only JPG, PNG, GIF, and TIFF are supported.")
+        if image_format not in ['JPEG', 'PNG', 'TIFF']:
+            raise BadRequest(f"Invalid image format. Image was {image_format}. Only JPG, PNG, and TIFF are supported.")
 
         # Operations count check
         operations = json.loads(request.form['operations'])
@@ -109,7 +109,7 @@ def check_op_parameters(operation, index):
     
     
     
-    
+#Start of application run    
 
 if __name__ == '__main__':
     app.run(debug=True)
