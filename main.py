@@ -13,10 +13,13 @@ MAX_IMAGE_SIZE = 5 * 1024 * 1024
 MAX_SIZE_IN_MB = MAX_IMAGE_SIZE / (1024 * 1024)
 MAX_OPERATIONS = 20
 
+
+# The main route for processing an image sequence
 @app.route('/process_image_sequence', methods=['POST'])
 def process_image_sequence_route():
     try:
-        # Preliminary checks
+        # Preliminary checks, returns 400 if image and opeartions is missing. Checks if 
+        # image size is greater than 5MB (for now)
         if 'image' not in request.files:
             raise BadRequest("Image file is missing in the request.")
         if 'operations' not in request.form:
@@ -37,13 +40,15 @@ def process_image_sequence_route():
         if len(operations) > MAX_OPERATIONS:
             raise BadRequest(f"Too many operations. Maximum allowed is {MAX_OPERATIONS}.")
         
+        # Check each operation for required parameters and validity
         for index, op in enumerate(operations, start=1):
             check_op_parameters(op, index)
 
-        # Process image
+        # Process image, return the thumbnails as well
         processed_images = process_image_sequence(image_file, operations)
 
         # Create ZIP archive in memory for processed images
+        # Can send back multiple images in a single response because of zip
         memory_file = io.BytesIO()
         with zipfile.ZipFile(memory_file, 'w', zipfile.ZIP_DEFLATED) as zf:
             for filename, img_bytes in processed_images:
@@ -61,7 +66,8 @@ def process_image_sequence_route():
         app.logger.error(f"An unexpected error occurred: {str(e)}")
         return jsonify({'error': "An unexpected error occurred while processing the image"}), 500
     
-    
+
+# Check each operation for required parameters and validity
 def check_op_parameters(operation, index):
     operation_type = operation.get('operation')
 
@@ -99,9 +105,9 @@ def check_op_parameters(operation, index):
                     raise BadRequest(f"Operation {index}: Resize percentage must be between -95% and +500%.")
                 
     elif operation_type in ['thumbnail', 'grayscale', 'rotateLeft', 'rotateRight']:
-        # No required parameters for these operations
-        pass
-
+        # If there are parameters then tell the client that it is extra
+        if len(operation) > 1:
+            raise BadRequest(f"Operation {index}: '{operation_type}' operation does not take any parameters. Please remove the extra parameters.")
     else:
         raise BadRequest(f"Operation {index}: Unknown operation type: {operation_type}. Please check the operation type and parameters.")
     

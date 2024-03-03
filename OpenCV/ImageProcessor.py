@@ -1,6 +1,8 @@
 import cv2
 from abc import ABC, abstractmethod
 
+# Tried creating a base class for the image processor as to avoid code repetition
+# And also force requirements.
 class ImageProcessor(ABC):
     def __init__(self, image):
         self.image = image
@@ -9,10 +11,11 @@ class ImageProcessor(ABC):
     def process_image(self):
         pass
     
-    def show_image(self):
-        cv2.imshow('Image', self.image)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+    # Not needed for the project but good for testing
+    #def show_image(self):
+        #cv2.imshow('Image', self.image)
+        #cv2.waitKey(0)
+        #cv2.destroyAllWindows()
         
     def get_image(self):
         return self.image
@@ -33,7 +36,7 @@ class FlipProcessor(ImageProcessor):
 class RotateProcessor(ImageProcessor):
     def __init__(self, image, angle):
         super().__init__(image)
-        self.angle = angle  # No rounding needed if you want to allow non-integer angles
+        self.angle = angle  
         
     def process_image(self):
         (h, w) = self.image.shape[:2]
@@ -98,6 +101,7 @@ class ThumbnailProcessor(ImageProcessor):
         
     def process_image(self):
         # Calculate the scaling factor to preserve aspect ratio
+        # default always set to 200x200
         h, w = self.image.shape[:2]
         scaling_factor = min(self.max_width / w, self.max_height / h)
         new_size = (int(w * scaling_factor), int(h * scaling_factor))
