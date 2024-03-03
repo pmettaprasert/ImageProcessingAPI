@@ -64,7 +64,7 @@ def process_image_sequence(image_bytes, operations):
             # Convert thumbnail to bytes and store
             _, thumb_buf = cv2.imencode(f'.{image_format}', thumbnail_image)
             thumbnail_bytes = io.BytesIO(thumb_buf).getvalue()
-            thumbnails_filename = f"thumbnail_{datetime.now().strftime('%Y%m%d%H%M%S%f')}_{i}.{image_format}"
+            thumbnails_filename = f"thumbnail_{datetime.now().strftime('%Y_%m_%d_%H-%M-%S_%f')}_{i}.{image_format}"
             processed_images.append((thumbnails_filename, thumbnail_bytes))
         
         elif operation_type == 'rotateLeft':
@@ -80,7 +80,7 @@ def process_image_sequence(image_bytes, operations):
     final_image_bytes = io.BytesIO(final_buf).getvalue()
     
     # Store the final processed image with datetime in this format: final_processed_image_YYYY_MM_DD_HH:MM:SS.{image_format}
-    final_filename = f"final_processed_image_{datetime.now().strftime('%Y%m%d%H%M%S%f')}.{image_format}"
+    final_filename = f"final_processed_image_{datetime.now().strftime('%Y_%m_%d_%H-%M-%S_%f')}.{image_format}"
     processed_images.insert(0, (final_filename, final_image_bytes))  # Ensure the final image is the first in the list
 
     return processed_images
