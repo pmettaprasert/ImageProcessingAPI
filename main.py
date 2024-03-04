@@ -11,6 +11,8 @@ app = Flask(__name__)
 # Define a maximum image size (in bytes)
 MAX_IMAGE_SIZE = 5 * 1024 * 1024  
 MAX_SIZE_IN_MB = MAX_IMAGE_SIZE / (1024 * 1024)
+
+# Only allow a maximum of 20 operations
 MAX_OPERATIONS = 20
 
 
@@ -62,7 +64,7 @@ def process_image_sequence_route():
         app.logger.error(f"Client error: {str(br)}")
         return jsonify({'error': str(br)}), 400
     except Exception as e:
-        # Handle unexpected errors
+        # Handle unexpected errors and return 500
         app.logger.error(f"An unexpected error occurred: {str(e)}")
         return jsonify({'error': "An unexpected error occurred while processing the image"}), 500
     
@@ -114,8 +116,7 @@ def check_op_parameters(operation, index):
 
     
     
-    
-#Start of application run    
 
+# Start of application run    
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)
