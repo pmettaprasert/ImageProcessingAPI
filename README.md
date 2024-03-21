@@ -62,8 +62,6 @@ On macOS and Linux:
 
 1. Run the Server:
 
-1. Run the Server:
-
 With the virtual environment activated and dependencies installed, you can start the API server by running:
 
 **python main.py**
